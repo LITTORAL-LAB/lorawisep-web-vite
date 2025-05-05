@@ -30,17 +30,9 @@ function RootComponent() {
     <I18nextProvider i18n={i18n}>
       <div className="flex flex-col min-h-screen">
         {/* Header */}
-        <header className="flex justify-between items-center px-4 py-2 border-b">
+        <header className="flex justify-between items-center px-4 py-2 border-b bg-gray-100 dark:bg-gray-800">
           <div className="flex gap-2 items-center">
             <h1 className="text-2xl font-semibold">LoRaWISEP</h1>
-            {/* <nav className="ml-4 flex gap-2">
-              <Link to="/" className="[&.active]:font-bold">
-                Home
-              </Link>
-              <Link to="/about" className="[&.active]:font-bold">
-                About
-              </Link>
-            </nav> */}
           </div>
           <div className="flex gap-2">
             <Button
