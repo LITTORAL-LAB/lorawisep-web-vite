@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSimulation } from "@/hooks/useSimulation";
 import { distributeDevicesRandomly } from "@/lib/utils";
+import { useSimulationStore } from "@/stores/simulationStore";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -79,6 +80,8 @@ export function ParamsConfig({
     isDisabled = devices.length <= 0;
   }
 
+  const { devices: devicesStore } = useSimulationStore();
+
   const methods = useForm<FormValues>({
     defaultValues: {
       simName: t("defaultSimName") || "SimulacaoTeste",
@@ -109,13 +112,13 @@ export function ParamsConfig({
 
       console.log("Form values:", values);
 
-      const devices = distributeDevicesRandomly(
-        Number(values.devicesQt),
-        Number(values.simWidth),
-        Number(values.simHeight)
-      );
+      // const devices = distributeDevicesRandomly(
+      //   Number(values.devicesQt),
+      //   Number(values.simWidth),
+      //   Number(values.simHeight)
+      // );
 
-      methods.setValue("devices", devices);
+      methods.setValue("devices", devicesStore);
       methods.setValue("map", true);
 
       if (setAreaValues) {
@@ -147,11 +150,11 @@ export function ParamsConfig({
       try {
         const simulationParams = {
           ...methods.getValues(),
-          devices: methods.getValues().devices ?? [],
+          devices: devicesStore ?? [],
         };
         console.log("devices", simulationParams.devices);
         // Pass the first device as an example, adjust as needed
-        const result = await runSimulation(simulationParams.devices);
+        const result = await runSimulation(devicesStore);
 
         toast.success(t("simulationCompleted"), {
           description: `${result.data.result.received_packets} pacotes recebidos`,
@@ -166,7 +169,7 @@ export function ParamsConfig({
       setOpenResults(true);
 
       // atualizar o posicionamento dos gateways com base no resultado da simulação
-      if (simulationResult?.data?.gateway_positions) {
+      if (simulationResult) {
         setGateways(simulationResult.data.gateway_positions);
         console.log(
           "Gateways updated with simulation result:",

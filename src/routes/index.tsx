@@ -2,6 +2,7 @@ import { ICoords } from "@/@types/ICoords";
 import { MapLayout } from "@/components/layout/map-layout";
 import { ParamsConfig } from "@/components/layout/params-config";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSimulationStore } from "@/stores/simulationStore";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,8 +19,13 @@ function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
 
+  const { devices: devicesStore, setDevices: setDevicesStore } =
+    useSimulationStore();
+
   const handleSimulate = () => {
     setIsLoading(true);
+    // setDevicesStore(devices);
+    console.log("Simulating with devices:", devicesStore);
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
@@ -69,6 +75,7 @@ function Index() {
                         fullScreen={fullScreen}
                         onSave={(devices) => {
                           setDevices(devices || []);
+                          setDevicesStore(devices || []);
                         }}
                         onDelete={() => {
                           setDevices([]);

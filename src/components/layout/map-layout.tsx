@@ -5,11 +5,19 @@ import {
   orderCoordinates,
   SetViewOnClick,
 } from "@/lib/utils";
+import { useSimulationStore } from "@/stores/simulationStore";
 import L from "leaflet";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet/dist/leaflet.css";
-import { Expand, Radio, SaveAll, Search, Trash2 } from "lucide-react";
+import {
+  Expand,
+  Radio,
+  RadioTower,
+  SaveAll,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useTranslation } from "react-i18next";
@@ -30,6 +38,12 @@ const svgString = encodeURIComponent(
   renderToStaticMarkup(<Radio size={32} color="black" />)
 );
 const iconUrl = `data:image/svg+xml,${svgString}`;
+
+const svgGatewayString = encodeURIComponent(
+  renderToStaticMarkup(<RadioTower size={32} color="red" />)
+);
+
+const iconGatewayUrl = `data:image/svg+xml,${svgGatewayString}`;
 
 interface IMapLayoutProps {
   setFullScreen: (fullScreen: boolean) => void;
@@ -56,6 +70,8 @@ export const MapLayout = ({
   const [selectMode, setSelectMode] = useState(false);
   const [area, setArea] = useState<ICoords[]>([]);
   const [devicesCount, setDevicesCount] = useState("0");
+
+  const { setDevices: setDevicesStore } = useSimulationStore();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -188,6 +204,7 @@ export const MapLayout = ({
                 const newDevices: ICoords[] = [...devices];
                 newDevices[index] = e.target.getLatLng();
                 setDevices(newDevices);
+                setDevicesStore(newDevices);
               },
             }}
             icon={
@@ -213,11 +230,12 @@ export const MapLayout = ({
                 const newDevices: ICoords[] = [...devices];
                 newDevices[index] = e.target.getLatLng();
                 setDevices(newDevices);
+                setDevicesStore(newDevices);
               },
             }}
             icon={
               new L.Icon({
-                iconUrl: iconUrl,
+                iconUrl: iconGatewayUrl,
                 iconSize: [30, 30],
                 className: "text-red-800",
               })
@@ -257,6 +275,7 @@ export const MapLayout = ({
           className="px-4 py-2 bg-red-800 text-white font-semibold rounded hover:bg-red-900"
           onClick={() => {
             setDevices([]);
+            setDevicesStore([]);
             if (onDelete) {
               onDelete();
             }
