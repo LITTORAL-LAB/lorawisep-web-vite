@@ -26,6 +26,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSimulation } from "@/hooks/useSimulation";
+import { distributeDevicesRandomly } from "@/lib/utils";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -35,6 +37,7 @@ interface IParamsConfigProps {
   setAreaValues: boolean;
   devices: ICoords[];
   onSimulate: () => void;
+  setGateways: (gateways: ICoords[]) => void;
   isLoading?: boolean;
 }
 
@@ -57,10 +60,14 @@ type FormValues = {
 export function ParamsConfig({
   setAreaValues,
   devices,
+  setGateways,
   onSimulate,
   isLoading = false,
 }: Readonly<IParamsConfigProps>) {
   const { t } = useTranslation();
+
+  const { runSimulation, simulationResult } = useSimulation();
+
   const [openProjectConfig, setOpenProjectConfig] = useState(false);
   const [openSimParams, setOpenSimParams] = useState(false);
   const [openOptAlgorithms, setOpenOptAlgorithms] = useState(false);
@@ -90,23 +97,7 @@ export function ParamsConfig({
     },
   });
 
-  function distributeDevicesRandomly(
-    n: number,
-    width: number,
-    height: number
-  ): ICoords[] {
-    const devices: ICoords[] = [];
-
-    for (let i = 0; i < n; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-
-      devices.push({ lat: x, lng: y });
-    }
-    return devices;
-  }
-
-  const onSubmit = (values: FormValues): void => {
+  const onSubmit = async (values: FormValues): Promise<void> => {
     if (!values.simName || !values.simEnv || !values.gwQuant || !values.gwPos) {
       toast("formErrorTitle", {
         description: t("formErrorDescription"),
@@ -151,9 +142,41 @@ export function ParamsConfig({
         }
       }
 
-      console.log(methods.getValues());
+      // console.log(methods.getValues());
+
+      try {
+        const simulationParams = {
+          ...methods.getValues(),
+          devices: methods.getValues().devices ?? [],
+        };
+        console.log("devices", simulationParams.devices);
+        // Pass the first device as an example, adjust as needed
+        const result = await runSimulation(simulationParams.devices);
+
+        toast.success(t("simulationCompleted"), {
+          description: `${result.data.result.received_packets} pacotes recebidos`,
+        });
+      } catch (error) {
+        toast.error(t("simulationFailed"), {
+          description: t("pleaseCheckConsole"),
+        });
+        console.error("Simulation error:", error);
+      }
 
       setOpenResults(true);
+
+      // atualizar o posicionamento dos gateways com base no resultado da simulação
+      if (simulationResult?.data?.gateway_positions) {
+        setGateways(simulationResult.data.gateway_positions);
+        console.log(
+          "Gateways updated with simulation result:",
+          simulationResult.data.gateway_positions
+        );
+      } else {
+        toast.error(t("noGatewaysFound"), {
+          description: t("pleaseCheckSimulation"),
+        });
+      }
 
       onSimulate();
     }

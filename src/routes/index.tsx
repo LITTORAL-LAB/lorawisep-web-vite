@@ -14,7 +14,7 @@ function Index() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("map");
   const [devices, setDevices] = useState<ICoords[]>([]);
-  const [gateways, setGateways] = useState([]);
+  const [gateways, setGateways] = useState<ICoords[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
 
@@ -91,6 +91,7 @@ function Index() {
               devices={devices}
               onSimulate={handleSimulate}
               isLoading={isLoading}
+              setGateways={setGateways}
             />
           </div>
         )}
