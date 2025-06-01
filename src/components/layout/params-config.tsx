@@ -67,7 +67,7 @@ export function ParamsConfig({
 }: Readonly<IParamsConfigProps>) {
   const { t } = useTranslation();
 
-  const { runSimulation, simulationResult } = useSimulation();
+  const { runSimulation } = useSimulation();
 
   const [openProjectConfig, setOpenProjectConfig] = useState(false);
   const [openSimParams, setOpenSimParams] = useState(false);
@@ -80,7 +80,8 @@ export function ParamsConfig({
     isDisabled = devices.length <= 0;
   }
 
-  const { devices: devicesStore } = useSimulationStore();
+  const { devices: devicesStore, setGateways: setGatewaysStore } =
+    useSimulationStore();
 
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -110,14 +111,6 @@ export function ParamsConfig({
         description: t("checkConsoleForDetails"),
       });
 
-      console.log("Form values:", values);
-
-      // const devices = distributeDevicesRandomly(
-      //   Number(values.devicesQt),
-      //   Number(values.simWidth),
-      //   Number(values.simHeight)
-      // );
-
       methods.setValue("devices", devicesStore);
       methods.setValue("map", true);
 
@@ -145,43 +138,31 @@ export function ParamsConfig({
         }
       }
 
-      // console.log(methods.getValues());
-
       try {
-        const simulationParams = {
-          ...methods.getValues(),
-          devices: devicesStore ?? [],
-        };
-        console.log("devices", simulationParams.devices);
-        // Pass the first device as an example, adjust as needed
         const result = await runSimulation(devicesStore);
 
         toast.success(t("simulationCompleted"), {
           description: `${result.data.result.received_packets} pacotes recebidos`,
         });
+
+        setOpenResults(true);
+
+        if (result) {
+          setGateways(result.data.gateway_positions);
+          setGatewaysStore(result.data.gateway_positions);
+        } else {
+          toast.error(t("noGatewaysFound"), {
+            description: t("pleaseCheckSimulation"),
+          });
+        }
+
+        onSimulate();
       } catch (error) {
         toast.error(t("simulationFailed"), {
           description: t("pleaseCheckConsole"),
         });
         console.error("Simulation error:", error);
       }
-
-      setOpenResults(true);
-
-      // atualizar o posicionamento dos gateways com base no resultado da simulação
-      if (simulationResult) {
-        setGateways(simulationResult.data.gateway_positions);
-        console.log(
-          "Gateways updated with simulation result:",
-          simulationResult.data.gateway_positions
-        );
-      } else {
-        toast.error(t("noGatewaysFound"), {
-          description: t("pleaseCheckSimulation"),
-        });
-      }
-
-      onSimulate();
     }
   };
 

@@ -19,13 +19,10 @@ function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
 
-  const { devices: devicesStore, setDevices: setDevicesStore } =
-    useSimulationStore();
+  const { setDevices: setDevicesStore } = useSimulationStore();
 
   const handleSimulate = () => {
     setIsLoading(true);
-    // setDevicesStore(devices);
-    console.log("Simulating with devices:", devicesStore);
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
