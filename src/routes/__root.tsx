@@ -1,14 +1,24 @@
 import { ModeToggle } from "@/components/mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/sonner";
 import i18n from "@/config/i18n";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { useAuthStore } from "@/stores/authStore";
+import { createRootRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 
 function RootComponent() {
   const [language, setLanguage] = useState(i18n.language);
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleLanguageChange = () => {
@@ -26,6 +36,11 @@ function RootComponent() {
     i18n.changeLanguage(lng);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/" });
+  };
+
   return (
     <I18nextProvider i18n={i18n}>
       <div className="flex flex-col min-h-screen">
@@ -34,7 +49,7 @@ function RootComponent() {
           <div className="flex gap-2 items-center">
             <h1 className="text-2xl font-semibold">LoRaWISEP</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button
               variant={language === "en" ? "default" : "outline"}
               size="sm"
@@ -50,6 +65,46 @@ function RootComponent() {
               Português
             </Button>
             <ModeToggle />
+
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src="/avatars/default.png"
+                        alt={user?.email}
+                      />
+                      <AvatarFallback>
+                        {user?.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuItem className="flex flex-col items-start">
+                    <div className="text-sm font-medium">{user?.email}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {isAuthenticated ? "Online" : "Offline"}
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate({ to: "/login" })}
+              >
+                Login
+              </Button>
+            )}
           </div>
         </header>
 
@@ -67,5 +122,5 @@ function RootComponent() {
 }
 
 export const Route = createRootRoute({
-  component: RootComponent, // Usando o componente aqui
+  component: RootComponent,
 });

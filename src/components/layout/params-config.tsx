@@ -28,11 +28,13 @@ import {
 } from "@/components/ui/dialog";
 import { useSimulation } from "@/hooks/useSimulation";
 import { distributeDevicesRandomly } from "@/lib/utils";
+import { useAuthStore } from "@/stores/authStore";
 import { useSimulationStore } from "@/stores/simulationStore";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { LoginForm } from "../forms/login-form";
 
 interface IParamsConfigProps {
   setAreaValues: boolean;
@@ -74,6 +76,9 @@ export function ParamsConfig({
   const [openOptAlgorithms, setOpenOptAlgorithms] = useState(false);
   const [openAreaParams, setOpenAreaParams] = useState(false);
   const [, setOpenResults] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   let isDisabled = false;
   if (!setAreaValues) {
@@ -102,6 +107,11 @@ export function ParamsConfig({
   });
 
   const onSubmit = async (values: FormValues): Promise<void> => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!values.simName || !values.simEnv || !values.gwQuant || !values.gwPos) {
       toast("formErrorTitle", {
         description: t("formErrorDescription"),
@@ -412,6 +422,15 @@ export function ParamsConfig({
           </form>
         </FormProvider>
       </CardContent>
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("loginRequired")}</DialogTitle>
+            <DialogDescription>{t("loginToSimulate")}</DialogDescription>
+          </DialogHeader>
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

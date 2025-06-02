@@ -93,6 +93,33 @@
     "exportResultsButton": "Export Results as CSV",
     "simulationResultsFileName": "simulation_results.csv",
     "loadingMessage": "Simulation is running. Please wait...",
-    "simulating": "Simulating..."
+    "simulating": "Simulating...",    
+    "loginToYourAccount": "Login to your account",
+    "enterYourEmailBelow": "Enter your email below to login to your account",
+    "forgotYourPassword": "Forgot your password?",
+    "dontHaveAnAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "loginSuccess": "Login successful!",
+    "loginFailed": "Login failed. Please check your credentials",
+    "loginRequired": "Login is required to access this feature.",
+    "loginToSimulate": "Login to simulate",
+    "login": "Login",
+    "loading": "Loading...",
+    "password": "Password",
+    "email": "Email",
+    "register": {
+    "createAccount": "Create your account",
+    "enterYourDetails": "Enter your details to create an account",
+    "name": "Full Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Register",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "registerSuccess": "Registration successful! Please login.",
+    "registerFailed": "Registration failed. Please try again."
+  }
   }
   
