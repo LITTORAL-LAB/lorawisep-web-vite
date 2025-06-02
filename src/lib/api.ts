@@ -1,3 +1,4 @@
+import { SimulationResponse } from '@/components/results-modal';
 import axios from 'axios';
 
 // Configuração base da API
@@ -39,26 +40,6 @@ interface DevicePosition {
   lng: number;
 }
 
-interface SimulationParameters {
-  devices: DevicePosition[];
-  simulationTime?: number;
-  nDevices?: number;
-  radius?: number;
-}
-
-export interface SimulationResult {
-  data: {
-    success: boolean;
-    result: {
-      sent_packets: number;
-      received_packets: number;
-      received_ratio: number;
-    };
-    gateway_positions: DevicePosition[];
-    parameters: SimulationParameters;
-  };
-}
-
 // Serviços da API
 export const SimulationService = {
   async generateGateways(devices: DevicePosition[]) {
@@ -68,7 +49,7 @@ export const SimulationService = {
 
   async runSimulation(params: DevicePosition[]) {
     const response = await apiClient.post('api/v1/simulation/run', params);
-    return response.data as SimulationResult;
+    return response.data as SimulationResponse;
   },
 };
 

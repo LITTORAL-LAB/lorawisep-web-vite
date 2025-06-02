@@ -35,6 +35,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { LoginForm } from "../forms/login-form";
+import { ResultsModal, SimulationResponse } from "../results-modal";
 
 interface IParamsConfigProps {
   setAreaValues: boolean;
@@ -75,8 +76,10 @@ export function ParamsConfig({
   const [openSimParams, setOpenSimParams] = useState(false);
   const [openOptAlgorithms, setOpenOptAlgorithms] = useState(false);
   const [openAreaParams, setOpenAreaParams] = useState(false);
-  const [, setOpenResults] = useState(false);
+  const [openResults, setOpenResults] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [simulationResults, setSimulationResults] =
+    useState<SimulationResponse | null>(null);
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
@@ -151,8 +154,10 @@ export function ParamsConfig({
       try {
         const result = await runSimulation(devicesStore);
 
+        setSimulationResults(result);
+
         toast.success(t("simulationCompleted"), {
-          description: `${result.data.result.received_packets} pacotes recebidos`,
+          description: `${result.data.result.received_packets} ${t("packetsReceived")}`,
         });
 
         setOpenResults(true);
@@ -431,6 +436,11 @@ export function ParamsConfig({
           <LoginForm />
         </DialogContent>
       </Dialog>
+      <ResultsModal
+        open={openResults}
+        onOpenChange={setOpenResults}
+        results={simulationResults ?? undefined}
+      />
     </Card>
   );
 }

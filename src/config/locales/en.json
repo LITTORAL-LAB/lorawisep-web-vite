@@ -119,7 +119,20 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginHere": "Login here",
     "registerSuccess": "Registration successful! Please login.",
-    "registerFailed": "Registration failed. Please try again."
-  }
+    "registerFailed": "Registration failed. Please try again.",
+    "simulationResults": "Simulation Results"
+  },
+    "simulationResults": "Simulation Results",
+    "performanceMetrics": "Performance Metrics",
+    "sentPackets": "Sent Packets",
+    "receivedPackets": "Received Packets",
+    "receptionRate": "Reception Rate",
+    "gatewayPositions": "Gateway Positions",
+    "devicePositions": "Device Positions",
+    "generatedFiles": "Generated Files",
+    "gatewaysFile": "Gateways File",
+    "devicesFile": "Devices File",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
   }
   
